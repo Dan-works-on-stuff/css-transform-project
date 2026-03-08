@@ -7,7 +7,7 @@
 | **Element investigated** | `.btn-primary` — the "Click Me" button |
 | **Framework** | React 19 + Tailwind CSS v4 |
 | **Build tool** | Vite 6 with `css.devSourcemap: true` |
-| **Browser** | Firefox |
+| **Browser** | Brave (since it's chromium-based) |
 | **Authored source** | `src/index.css` |
 
 ## Authored CSS
@@ -36,7 +36,7 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Styles panel rule** | `background-color: var(--color-primary)` |
 | **Generated CSS location** | `index.css:20` |
 | **Authored source location** | `index.css:6` — `--color-primary: #66b2b2` inside the `@theme` block (lines 3–9) |
-| **Traceable to source?** | ✅ Yes — clicking the rule in the Styles panel navigated directly to `index.css` in the Style Editor. The variable `--color-primary` is authored, its hex value is readable, and the computed `rgb(102, 178, 178)` is a direct conversion of `#66b2b2`. The chain is unambiguous. |
+| **Traceable to source?** | ✅ Yes — clicking the rule in the Styles pane navigated directly to `index.css` in the Sources panel. The variable `--color-primary` is authored, its hex value is readable, and the computed `rgb(102, 178, 178)` is a direct conversion of `#66b2b2`. The chain is unambiguous. |
 
 ---
 
@@ -81,12 +81,12 @@ All five properties below originate from this single `@apply` directive. The bro
 | Field | Value |
 |---|---|
 | **Computed value (unfocused)** | `--tw-ring-shadow: 0 0 #0000` |
-| **Computed value (focused, via pseudo-class toggle)** | `--tw-ring-color: #008080` |
-| **Styles panel rule** | `box-shadow` declaration unchanged — still references the same 5 `--tw-*` variables |
-| **Separate `:focus` rule visible in Styles panel?** | No |
-| **Generated CSS location** | `index.css:20` (same as all other properties) |
-| **Authored source location** | `index.css:21` — `@apply focus:ring-2 focus:ring-focus` |
-| **Traceable to source?** | ❌ No — activating the `:focus` pseudo-class toggle in DevTools caused `--tw-ring-color: #008080` to appear in the Computed tab. However: (1) no `:focus` selector rule block appeared in the Styles panel; (2) nothing in the Styles panel indicated why the computed variable changed; (3) the `box-shadow` declaration remained identical. The visual ring effect exists and functions correctly, but its mechanism is entirely invisible through standard Styles panel inspection. |
+| **Computed value (focused)** | `--tw-ring-color: #008080`, `--tw-ring-shadow: 0 0 0 2px #008080` |
+| **Styles panel rules (focused)** | Three separate nested `&:focus` rule blocks inside `.btn-primary`, setting `outline-style: none`, `--tw-ring-color: var(--color-focus)`, and `--tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor)` plus a restatement of the full `box-shadow` chain |
+| **Separate `:focus` rule visible in Styles panel?** | ✅ Yes — visible as nested `&:focus` blocks when the element is focused |
+| **Generated CSS location** | `index.css:21` (the `@apply` line) |
+| **Authored source location** | `index.css:21` — `@apply focus:ring-2 focus:ring-focus focus:outline-none` |
+| **Traceable to source?** | ⚠️ Partially — the `:focus` rule blocks are visible and correctly point to `index.css:21`. However, the ring itself is still assembled through variable indirection: `--tw-ring-color` is set to `var(--color-focus)`, which resolves to `#008080`; `--tw-ring-shadow` is computed from a `calc()` expression using `--tw-ring-offset-width`; and the final visual effect is delivered by reusing the same `box-shadow` composite declaration from the base rule. The authored utilities `focus:ring-2` and `focus:ring-focus` map to three separate generated rule blocks, with no single declaration that reads "ring width = 2px, ring color = focus color". |
 
 ---
 
@@ -112,11 +112,11 @@ Every CSS property generated from `.btn-primary` points to the same source locat
 
 ---
 
-### Breakdown 3: Invisible State-Dependent Variable Indirection
+### Breakdown 3: One Utility, Multiple Generated Rule Blocks
 
 **Properties affected:** `box-shadow` (focus ring state)
 
-The authored utilities `focus:ring-2 focus:ring-focus` generate a `:focus`-scoped rule that overrides `--tw-ring-shadow` and `--tw-ring-color`. However, no `:focus` selector rule block appears in the Styles panel when the element is focused. The `box-shadow` declaration itself never changes between focused and unfocused states — it always references the same five `--tw-*` variables. Only the computed value of `--tw-ring-color` silently updates to `#008080` (the value of `--color-focus`) when focus is applied.
+The authored utilities `focus:ring-2 focus:ring-focus focus:outline-none` appear as a single grouped expression on line 21 of `index.css`. In the generated CSS, Tailwind expands these into **three separate nested `&:focus` rule blocks**, each setting a different variable or property. None of these blocks directly states "ring width = 2px" or "ring color = focus color" — instead, `--tw-ring-shadow` is computed from a `calc()` expression using `--tw-ring-offset-width`, and `--tw-ring-color` is set to `var(--color-focus)` rather than a literal value. The final visual ring is then delivered by reusing the same `box-shadow` composite declaration from the base `.btn-primary` rule.
 
-**Example:** Toggling `:focus` via the DevTools pseudo-class panel caused `--tw-ring-color: #008080` to appear in the Computed tab. The visual ring appeared on the element. But the Styles panel showed no new rule, no `:focus` selector, and no change to the `box-shadow` declaration. The cause of the visual effect is present in the computed output but completely absent from the rule-level view that DevTools exposes.
+**Example:** The authored `focus:ring-2` alone produces a rule block that sets `--tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor)`. The `2` from `ring-2` is embedded inside a `calc()` expression mixed with another variable. Tracing why the ring is exactly 2px wide requires mentally parsing a generated expression rather than reading an authored value. All three generated blocks point to `index.css:21`, but no individual block corresponds to a single utility — the mapping is one-to-many and obscured by variable composition.
 
