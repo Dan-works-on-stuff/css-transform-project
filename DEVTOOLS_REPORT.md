@@ -24,6 +24,9 @@ The button is defined in `src/index.css` at lines 20–22:
 
 All five properties below originate from this single `@apply` directive. The browser receives fully expanded standard CSS; the `@apply` syntax is never seen by the browser.
 
+ 📸
+    ![The button in the browser — normal state (unfocused)](screenshots/button.png)
+
 ---
 
 ## Property Investigations
@@ -38,6 +41,8 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Authored source location** | `index.css:6` — `--color-primary: #66b2b2` inside the `@theme` block (lines 3–9) |
 | **Traceable to source?** | ✅ Yes — clicking the rule in the Styles pane navigated directly to `index.css` in the Sources panel. The variable `--color-primary` is authored, its hex value is readable, and the computed `rgb(102, 178, 178)` is a direct conversion of `#66b2b2`. The chain is unambiguous. |
 
+> 📸 **Screenshot:** Styles pane showing `background-color: var(--color-primary)` with the source link to `index.css`, and the `@theme` block visible in the Sources panel alongside it.
+
 ---
 
 ### Property 2: `padding`
@@ -50,6 +55,7 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Authored source location** | `index.css:21` — `@apply px-4 py-2` |
 | **Traceable to source?** | ⚠️ Partially — DevTools navigates to `index.css` but points to line 20 (the selector), not line 21 where `@apply px-4 py-2` is written. Additionally, `--spacing` is a Tailwind-internal custom property (default `0.25rem`) that does not exist anywhere in the authored CSS. The computed `16px` resolves as `calc(0.25rem * 4) = 1rem = 16px`, introducing a layer of indirection through a variable the author never declared. |
 
+ 📸 ![Computed tab with `padding-left: 16px` expanded, and the Styles pane showing `padding-inline: calc(var(--spacing) * 4)` with the source link pointing to `index.css:20`.](screenshots/padding.png)
 ---
 
 ### Property 3: `border-radius`
@@ -62,6 +68,7 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Authored source location** | `index.css:21` — `@apply rounded-lg` |
 | **Traceable to source?** | ⚠️ Partially — DevTools navigates to `index.css` but points to line 20, not to the specific `rounded-lg` utility on line 21. The variable `--radius-lg: 0.5rem` (also `--radius-xl: 0.75rem` visible in the inspector) is injected by Tailwind and has no counterpart in the authored CSS. The name `rounded-lg` and the variable name `--radius-lg` are inferable by convention, but no explicit mapping is shown. |
 
+ 📸 ![Styles pane showing `border-radius: var(--radius-lg)` with the source link to `index.css:20`, and the Computed tab showing all four corners at `8px`](screenshots/border.png)
 ---
 
 ### Property 4: `box-shadow`
@@ -74,9 +81,11 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Authored source location** | `index.css:21` — `@apply shadow-md` |
 | **Traceable to source?** | ❌ No — the Styles panel shows a composite value built from five `--tw-*` variables (`--tw-inset-shadow`, `--tw-inset-ring-shadow`, `--tw-ring-offset-shadow`, `--tw-ring-shadow`, `--tw-shadow`). None of these are authored. The actual shadow values are held inside `--tw-shadow`, which expands to the two-layer drop shadow that corresponds to Tailwind's `shadow-md` preset. This chain — authored utility → Tailwind variable → composite declaration → computed value — is not surfaced by DevTools at any step. |
 
+    ![Styles pane showing the full `box-shadow: var(--tw-inset-shadow), ...` declaration with all five variables, and the Computed tab showing the resolved multi-layer shadow value.](screenshots/box-shadow.png)(screenshots/hover.png)
+
 ---
 
-### Property 5: Focus Ring (`--tw-ring-color` via `box-shadow`)
+### Property 5: Focus Ring
 
 | Field | Value |
 |---|---|
@@ -87,6 +96,10 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Generated CSS location** | `index.css:21` (the `@apply` line) |
 | **Authored source location** | `index.css:21` — `@apply focus:ring-2 focus:ring-focus focus:outline-none` |
 | **Traceable to source?** | ⚠️ Partially — the `:focus` rule blocks are visible and correctly point to `index.css:21`. However, the ring itself is still assembled through variable indirection: `--tw-ring-color` is set to `var(--color-focus)`, which resolves to `#008080`; `--tw-ring-shadow` is computed from a `calc()` expression using `--tw-ring-offset-width`; and the final visual effect is delivered by reusing the same `box-shadow` composite declaration from the base rule. The authored utilities `focus:ring-2` and `focus:ring-focus` map to three separate generated rule blocks, with no single declaration that reads "ring width = 2px, ring color = focus color". |
+
+> 📸 **Screenshot 1:** The button in the browser in its focused state — the teal ring should be visible around it.
+
+> 📸 **Screenshot 2:** The Styles pane with the three nested `&:focus` rule blocks visible, showing `--tw-ring-color`, `--tw-ring-shadow`, and `outline-style: none`, all pointing to `index.css:21`.
 
 ---
 
