@@ -84,8 +84,6 @@ All five properties below originate from this single `@apply` directive. The bro
 
 ![Styles pane showing the full box-shadow declaration with all five variables, and the Computed tab showing the resolved multi-layer shadow value.](screenshots/box-shadow.png)
 
-![Hover state — Styles pane showing the hover opacity rule](screenshots/hover.png)
-
 ---
 
 ### Property 5: Focus Ring
