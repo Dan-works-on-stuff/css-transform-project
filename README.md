@@ -9,7 +9,7 @@ Built with **React 19**, **Vite 6**, **Tailwind CSS v4**, and **TypeScript**.
 ## Quick Start
 
 ```bash
-git clone <repo-url>
+git clone <[repo-url](https://github.com/Dan-works-on-stuff/css-transform-project)>
 cd css-transform-project
 npm install
 npm run dev
