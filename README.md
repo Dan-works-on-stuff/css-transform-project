@@ -1,6 +1,6 @@
 # CSS Transformation & Source Map Demo
 
-A small interactive frontend project that demonstrates how authored CSS is transformed by a modern build pipeline and how **source maps** let you trace generated styles back to their original source files.
+A small interactive frontend project demonstrating how authored CSS is transformed by a modern build pipeline and how **source maps** link generated styles back to their original source files.
 
 Built with **React 19**, **Vite 6**, **Tailwind CSS v4**, and **TypeScript**.
 
@@ -15,29 +15,29 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+The app runs at [http://localhost:5173](http://localhost:5173).
 
-> **Requirements:** Node.js v24.14.0 or later.
+> **Requirements:** Node.js 18+ and npm.
 
 ## Features
 
-- **🎨 Theme Switcher** — Toggle between light (teal) and dark themes using CSS custom properties and a `data-theme` attribute. All color values are defined once in `src/index.css` via Tailwind's `@theme` directive.
+- **🎨 Theme Switcher** — Toggles between light (teal) and dark themes via CSS custom properties and a `data-theme` attribute. All color values are defined once in `src/index.css` through Tailwind's `@theme` directive.
 
-- **🔐 Secret Password Challenge** — A blurred, rotated element hides a CSS comment containing a password. Use your browser's DevTools to inspect the element, find the password in the source-mapped CSS, and unlock the message.
+- **🔐 Secret Password Challenge** — A blurred, rotated element hides a CSS comment containing a password. Inspecting the element in the browser DevTools reveals the password in the source-mapped CSS, which can then be entered to unlock the message.
 
   ![Secret challenge — inspecting the blurred element in DevTools reveals the password](screenshots/secret-challenge.png)
 
-- **🗺️ Source Map Visualizer** — An interactive UI component that reads the CSS source maps injected by Vite at dev time, showing:
+- **🗺️ Source Map Visualizer** — An interactive UI component that reads CSS source maps injected by Vite at dev time, displaying:
   - Which original source files contributed to the generated CSS
   - The original source content (embedded via `sourcesContent`)
-  - A mapping table showing generated line:column → original file line:column
+  - A mapping table of generated line:column → original file line:column
   - A preview of the generated CSS output
 
   ![Source Map Visualizer component showing mapped sources and generated CSS](screenshots/sourcemap-visualizer.png)
 
 ## How CSS is Transformed
 
-The CSS you author in `src/index.css` does **not** correspond 1-to-1 with the CSS the browser receives. Here's the transformation pipeline:
+The authored CSS in `src/index.css` does **not** correspond 1-to-1 with the CSS the browser receives. The transformation pipeline works as follows:
 
 ### 1. Authored CSS (`src/index.css`)
 ```css
@@ -76,8 +76,8 @@ The browser receives a single, fully expanded CSS stylesheet with no Tailwind di
 
 ### Verifying in DevTools
 1. Open DevTools → **Elements** → **Styles** pane
-2. Click on any style rule — the link on the right shows `index.css:XX` (the original source) instead of a generated filename
-3. This is source maps in action: the browser uses the mapping data to show you where the style was *authored*, not where it was *generated*
+2. Click any style rule — the link on the right shows `index.css:XX` (the original source) instead of a generated filename
+3. The browser uses the mapping data to display where the style was *authored*, not where it was *generated*
 
 ![DevTools Styles pane showing source-mapped CSS pointing to index.css](screenshots/devtools-sourcemap.png)
 
