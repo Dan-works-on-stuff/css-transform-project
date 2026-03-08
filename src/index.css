@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+    --color-bg: #b2d8d8;
+    --color-text: #004c4c;
+    --color-primary: #66b2b2;
+    --color-focus: #008080;
+    --color-card: #ffffff;
+}
+
+/* Dark theme overrides via data attribute */
+[data-theme="dark"] {
+    --color-bg: #1a202c;
+    --color-card: #2d3748;
+    --color-text: #f7fafc;
+    --color-primary: #4a5568;
+}
+
+@layer components {
+    .btn-primary {
+        @apply px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus transition-all cursor-pointer;
+    }
+
+    .secret-clue {
+        /*password: hidden_in_front_side*/
+        @apply blur-[1px] opacity-50 rotate-17;
+    }
+}
