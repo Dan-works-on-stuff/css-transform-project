@@ -81,7 +81,8 @@ All five properties below originate from this single `@apply` directive. The bro
 | **Authored source location** | `index.css:21` — `@apply shadow-md` |
 | **Traceable to source?** | ❌ No — the Styles panel shows a composite value built from five `--tw-*` variables (`--tw-inset-shadow`, `--tw-inset-ring-shadow`, `--tw-ring-offset-shadow`, `--tw-ring-shadow`, `--tw-shadow`). None of these are authored. The actual shadow values are held inside `--tw-shadow`, which expands to the two-layer drop shadow that corresponds to Tailwind's `shadow-md` preset. This chain — authored utility → Tailwind variable → composite declaration → computed value — is not surfaced by DevTools at any step. |
 
-    ![Styles pane showing the full `box-shadow: var(--tw-inset-shadow), ...` declaration with all five variables, and the Computed tab showing the resolved multi-layer shadow value.](screenshots/box-shadow.png)(screenshots/hover.png)
+    ![Styles pane showing the full `box-shadow: var(--tw-inset-shadow), ...` declaration with all five variables, and the Computed tab showing the resolved multi-layer shadow value.](screenshots/box-shadow.png)
+    (screenshots/hover.png)
 
 ---
 
